@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Registration - Success</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Teacher successfully registered</h1>
+        <h2>Registration Details</h2>
+        <div id="details">
+            <!-- Teacher details will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script>
+        const abi = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "_teacherName",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "_department",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "_designation",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "_domainOfInterest",
+                        "type": "string"
+                    }
+                ],
+                "name": "registerTeacher",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_user",
+                        "type": "address"
+                    }
+                ],
+                "name": "getTeacherDetails",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        const contractAddress = '0x9955ed28D73C886491BC71c8fA628496D083B013';
+
+        async function fetchTeacherDetails() {
+            if (window.ethereum) {
+                window.web3 = new Web3(window.ethereum);
+                try {
+                    await window.ethereum.enable();
+                } catch (error) {
+                    console.error('User denied account access', error);
+                    alert('Please enable MetaMask to continue.');
+                    return;
+                }
+            } else {
+                console.log('No Ethereum provider detected. Install MetaMask.');
+                alert('No Ethereum provider detected. Install MetaMask.');
+                return;
+            }
+
+            const contract = new web3.eth.Contract(abi, contractAddress);
+            const accounts = await web3.eth.getAccounts();
+            const account = accounts[0];
+
+            try {
+                const details = await contract.methods.getTeacherDetails(account).call();
+                document.getElementById('details').innerHTML = `
+                    <h2>Teacher Registration Receipt</h2>
+                    <p><strong>Name:</strong> ${details[0]}</p>
+                    <p><strong>Department:</strong> ${details[1]}</p>
+                    <p><strong>Designation:</strong> ${details[2]}</p>
+                    <p><strong>Domain of Interest:</strong> ${details[3]}</p>
+                    <p class="timestamp">Date & Time: ${new Date().toLocaleString()}</p>
+                    <p class="signature">Teacher Signature: ${details[0]}</p>
+                `;
+            } catch (error) {
+                console.error('Error fetching teacher details:', error);
+                alert('Error fetching teacher details. See console for details.');
+            }
+        }
+
+        window.onload = fetchTeacherDetails;
+    </script>
+</body>
+</html>
